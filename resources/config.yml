@@ -1,0 +1,19 @@
+# Capture The Warpstone, by Kyle Nanakdewa
+# Configuration
+
+# The world to use for CTW.
+# If set, the plugin will only function in this world. If blank, the plugin will be active in all worlds.
+world: 
+
+# Whether to block teleportation. This only affects worlds where CTW is active (if set above). Default true.
+block-teleportation: true
+
+# The starting time required to capture a Warpstone, in seconds. Default 480 (8 minutes).
+base-cap-time: 480
+
+# The percentage of remaining time to deduct when additional players (up to 4) are capturing.
+# Default 0.20 (20% deducted from remaining time, per additional player).
+cap-time-reduction-percentage: 0.20
+
+# The maximum distance a player can move away from a warpstone, while capturing. Default 30 blocks.
+max-cap-distance: 30

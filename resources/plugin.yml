@@ -1,0 +1,8 @@
+name: CaptureTheWarpstone
+version: 1.0
+description: A minigame about capturing and holding Warpstones for your realm.
+author: Kyle Nanakdewa
+website: http://plugins.akenland.com
+
+main: com.kylenanakdewa.ctw.CTWPlugin
+depend: [CoRE, Warpstones]
