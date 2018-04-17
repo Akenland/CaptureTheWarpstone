@@ -148,6 +148,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 	private void startCapping(Realm realm, Player player){
 		// Start cap
 		cappingRealm = realm;
+		cappingPlayers = new HashSet<Player>();
 		cappingPlayers.add(player);
 		capTime = CTWPlugin.getBaseCapTime()*20;
 
