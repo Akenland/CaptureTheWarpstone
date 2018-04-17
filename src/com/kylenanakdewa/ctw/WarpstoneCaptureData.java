@@ -171,6 +171,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 			// If cap time runs out, set new owner!
 			if(capTime==0){
 				setRealm(cappingRealm);
+				return;
 			}
 			progressBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
 			progressBar.setTitle("Capturing "+warpstoneName+": "+getCapTimeString()+" remaining");
@@ -208,7 +209,9 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 			minutes++;
 			seconds-=60;
 		}
-		return minutes+":"+Math.round(seconds);
+		String secString = Math.round(seconds)+"";
+		if(secString.length()==1) secString = "0"+secString;
+		return minutes+":"+secString;
 	}
 
 }
