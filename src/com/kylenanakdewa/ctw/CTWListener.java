@@ -47,7 +47,8 @@ public final class CTWListener implements Listener {
 	public void onWarp(PlayerWarpEvent event){
 		// Prevent warping to lost warpstones
 		WarpstoneCaptureData data = CTWPlugin.getWarpstoneCaptureData(event.getWarpstone());
-		if(data.isCapturable() && !event.getCause().equals(WarpCause.SHARD) && !data.getRealm().equals(PlayerCharacter.getCharacter(event.getPlayer()).getRealm())){
+		PlayerCharacter character = PlayerCharacter.getCharacter(event.getPlayer());
+		if(data.isCapturable() && !event.getCause().equals(WarpCause.SHARD) && (character.getRealm()==null || data.getRealm()==null || !data.getRealm().equals(character.getRealm()))){
 			Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"Your realm has lost this Warpstone!");
 			event.setCancelled(true);
 			return;
