@@ -37,7 +37,8 @@ public final class CTWPlugin extends JavaPlugin {
 	 * @return the world for CTW, or null if all worlds are enabled
 	 */
 	public static World getCTWWorld(){
-		return Bukkit.getWorld(plugin.getConfig().getString("world"));
+		String worldName = plugin.getConfig().getString("world");
+		return worldName==null ? null : Bukkit.getWorld(worldName);
 	}
 
 	/**
