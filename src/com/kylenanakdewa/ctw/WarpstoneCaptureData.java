@@ -169,7 +169,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 			// Update timer
 			capTime-=20;
 			// If cap time runs out, set new owner!
-			if(capTime==0){
+			if(capTime<1){
 				setRealm(cappingRealm);
 				return;
 			}
