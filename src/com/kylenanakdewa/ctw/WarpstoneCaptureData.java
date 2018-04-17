@@ -158,7 +158,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> player.sendMessage(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is being captured!"));
 
 		// Notify capping player, and set up progress bar
-		player.sendTitle("", CommonColors.MESSAGE+"Capturing "+warpstoneName);
+		player.sendTitle("", ChatColor.BLUE+"Capturing "+warpstoneName);
 
 		progressBar = Bukkit.createBossBar("Capturing "+warpstoneName, BarColor.BLUE, BarStyle.SOLID);
 		progressBar.addPlayer(player);
@@ -180,6 +180,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 			checkPlayers.removeIf(cappingPlayer -> !cappingPlayer.isOnline() || cappingPlayer.getLocation().distanceSquared(warpstone.getLocation()) > Math.pow(CTWPlugin.getMaxCapDistance(),2));
 			if(checkPlayers.size()==0){
 				stopCapping();
+				cappingPlayers.forEach(cappingPlayer -> cappingPlayer.sendTitle("", CommonColors.ERROR+"Failed to capture "+warpstoneName));
 				if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> player.sendMessage(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured."));
 			}
 		}, 0, 20);
