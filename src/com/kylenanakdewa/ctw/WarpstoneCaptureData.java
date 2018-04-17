@@ -168,6 +168,10 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
 			// Update timer
 			capTime-=20;
+			// If cap time runs out, set new owner!
+			if(capTime==0){
+				setRealm(cappingRealm);
+			}
 			progressBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
 			progressBar.setTitle("Capturing "+warpstoneName+": "+getCapTimeString()+" remaining");
 
@@ -177,11 +181,6 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 			if(checkPlayers.size()==0){
 				stopCapping();
 				if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> player.sendMessage(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured."));
-			}
-
-			// If cap time runs out, set new owner!
-			if(capTime==0){
-				setRealm(cappingRealm);
 			}
 		}, 0, 20);
 	}
@@ -203,7 +202,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 	 */
 	private String getCapTimeString(){
 		double seconds = capTime/20;
-		double minutes = 0;
+		int minutes = 0;
 		while(seconds>=60){
 			minutes++;
 			seconds-=60;
