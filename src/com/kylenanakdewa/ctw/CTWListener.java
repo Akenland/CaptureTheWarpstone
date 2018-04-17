@@ -9,6 +9,7 @@ import com.kylenanakdewa.warpstones.events.PlayerWarpEvent.WarpCause;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
@@ -62,7 +63,7 @@ public final class CTWListener implements Listener {
 
 
 	/**
-	 * Block teleportation on the CTW world.
+	 * Block portal use on the CTW world.
 	 */
 	@EventHandler
 	public void onTeleport(PlayerTeleportEvent event){
@@ -70,10 +71,26 @@ public final class CTWListener implements Listener {
 
 		TeleportCause cause = event.getCause();
 		if((CTWPlugin.getCTWWorld()==null || event.getFrom().getWorld().equals(CTWPlugin.getCTWWorld()) || event.getTo().getWorld().equals(CTWPlugin.getCTWWorld())) && 
-		// Block if cause is a portal or a plugin
-		(cause.equals(TeleportCause.END_PORTAL) || cause.equals(TeleportCause.NETHER_PORTAL) || cause.equals(TeleportCause.PLUGIN))){
+		// Block if cause is a portal
+		(cause.equals(TeleportCause.END_PORTAL) || cause.equals(TeleportCause.NETHER_PORTAL))){
 			Utils.sendActionBar(event.getPlayer(), CommonColors.INFO+"You must use Warpstones on this world!");
 			event.setCancelled(true);
+		}
+	}
+
+	/**
+	 * Block teleportation commands on the CTW world.
+	 */
+	@EventHandler
+	public void onCommand(PlayerCommandPreprocessEvent event){
+		if(!CTWPlugin.isTeleportationBlocked() || event.getPlayer().hasPermission("warpstones.tp.nolimits")) return;
+
+		if(CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
+			String command = event.getMessage().toLowerCase();
+			if(command.contains("tp ") || command.contains("tpa ") || command.contains("tphere ") || command.contains("tpahere ")){
+				Utils.sendActionBar(event.getPlayer(), CommonColors.INFO+"You must use Warpstones on this world!");
+				event.setCancelled(true);
+			}
 		}
 	}
 }
