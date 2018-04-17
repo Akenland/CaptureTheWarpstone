@@ -10,6 +10,7 @@ import com.kylenanakdewa.core.realms.Realm;
 import com.kylenanakdewa.core.realms.RealmMember;
 import com.kylenanakdewa.warpstones.Warpstone;
 import com.kylenanakdewa.warpstones.WarpstoneSaveDataSection;
+import com.kylenanakdewa.warpstones.WarpstonesPlugin;
 import com.kylenanakdewa.warpstones.events.WarpstoneActivateEvent;
 
 import org.bukkit.Bukkit;
@@ -92,6 +93,8 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 
 		// Notify winning realm
 		realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank));
+
+		WarpstonesPlugin.plugin.saveWarpstones();
 	}
 	@Override
 	public boolean isRealmOfficer() {
