@@ -56,7 +56,7 @@ public final class CTWListener implements Listener {
 
 		// Prevent warp command on CTW world
 		if(CTWPlugin.isTeleportationBlocked() && event.getCause().equals(WarpCause.COMMAND) && (CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld()))){
-			Utils.sendActionBar(event.getPlayer(), CommonColors.INFO+"You must use Warpstones on this world!");
+			Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"You must use Warpstones on this world!");
 			event.setCancelled(true);
 			return;
 		}
@@ -74,7 +74,7 @@ public final class CTWListener implements Listener {
 		if((CTWPlugin.getCTWWorld()==null || event.getFrom().getWorld().equals(CTWPlugin.getCTWWorld()) || event.getTo().getWorld().equals(CTWPlugin.getCTWWorld())) && 
 		// Block if cause is a portal
 		(cause.equals(TeleportCause.END_PORTAL) || cause.equals(TeleportCause.NETHER_PORTAL))){
-			Utils.sendActionBar(event.getPlayer(), CommonColors.INFO+"You must use Warpstones on this world!");
+			Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"You must use Warpstones on this world!");
 			event.setCancelled(true);
 		}
 	}
@@ -89,7 +89,7 @@ public final class CTWListener implements Listener {
 		if(CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
 			String command = event.getMessage().toLowerCase();
 			if(command.contains("tp ") || command.contains("tpa ") || command.contains("tphere ") || command.contains("tpahere ")){
-				Utils.sendActionBar(event.getPlayer(), CommonColors.INFO+"You must use Warpstones on this world!");
+				Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"You must use Warpstones on this world!");
 				event.setCancelled(true);
 			}
 		}
