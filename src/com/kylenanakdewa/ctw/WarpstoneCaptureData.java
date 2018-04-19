@@ -50,7 +50,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		// Determine if capturable based on global setting
 		if(CTWPlugin.getCTWWorld()==null || warpstone.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
 			isCapturable = true;
-			realm = CTWPlugin.getRealmProvider().getRealm(getString("realm"));
+			realm = CTWPlugin.getRealmProvider().getRealm(data.getString("realm"));
 		}
 	}
 
@@ -85,7 +85,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		if(this.realm!=null) this.realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.RED+"Warpstone Lost!", warpstoneNameOrBlank));
 
 		this.realm = realm;
-		set("realm", realm.getIdentifier());
+		data.set("realm", realm.getIdentifier());
 		stopCapping();
 
 		// Notify all players that warpstone was captured
