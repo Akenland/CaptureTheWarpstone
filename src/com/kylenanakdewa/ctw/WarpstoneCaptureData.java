@@ -96,7 +96,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		// Notify winning realm
 		realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank));
 
-		WarpstonesPlugin.plugin.saveWarpstones();
+		save();
 	}
 	@Override
 	public boolean isRealmOfficer() {
