@@ -10,7 +10,6 @@ import com.kylenanakdewa.core.realms.Realm;
 import com.kylenanakdewa.core.realms.RealmMember;
 import com.kylenanakdewa.warpstones.Warpstone;
 import com.kylenanakdewa.warpstones.WarpstoneSaveDataSection;
-import com.kylenanakdewa.warpstones.WarpstonesPlugin;
 import com.kylenanakdewa.warpstones.events.WarpstoneActivateEvent;
 
 import org.bukkit.Bukkit;
@@ -84,7 +83,10 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		String warpstoneNameOrWarpstone = warpstone.getDisplayName()!=null ? warpstone.getDisplayName() : "Warpstone";
 
 		// Notify losing realm
-		if(this.realm!=null) this.realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.RED+"Warpstone Lost!", warpstoneNameOrBlank));
+		if(this.realm!=null){
+			this.realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.RED+"Warpstone Lost!", warpstoneNameOrBlank));
+			this.realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> childPlayer.sendTitle(ChatColor.RED+"Warpstone Lost!", warpstoneNameOrBlank)));
+		}
 
 		this.realm = realm;
 		data.set("realm", realm.getIdentifier());
@@ -95,6 +97,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 
 		// Notify winning realm
 		realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank));
+		realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> childPlayer.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank)));
 
 		save();
 	}
@@ -169,7 +172,6 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		player.sendTitle("", ChatColor.BLUE+"Capturing "+warpstoneName);
 
 		progressBar = Bukkit.createBossBar("Capturing "+warpstoneName, BarColor.BLUE, BarStyle.SOLID);
-		progressBar.addPlayer(player);
 		progressBar.setVisible(true);
 
 		losingBar = Bukkit.createBossBar("Losing "+warpstoneName, BarColor.RED, BarStyle.SOLID);
@@ -187,10 +189,15 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 
 			progressBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
 			progressBar.setTitle("Capturing "+warpstoneName+": "+getCapTimeString()+" remaining");
+			realm.getOnlinePlayers().forEach(cappingPlayer -> progressBar.addPlayer(cappingPlayer));
+			realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> progressBar.addPlayer(childPlayer)));
 
 			losingBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
 			losingBar.setTitle("Losing "+warpstoneName+": "+getCapTimeString()+" remaining");
-			if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> losingBar.addPlayer(losingPlayer));
+			if(this.realm!=null){
+				this.realm.getOnlinePlayers().forEach(losingPlayer -> losingBar.addPlayer(losingPlayer));
+				this.realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> losingBar.addPlayer(childPlayer)));
+			}
 
 			// Remove players if they go too far or disconnect
 			Set<Player> checkPlayers = new HashSet<Player>(cappingPlayers);
@@ -202,7 +209,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 			}
 			if(checkPlayers.size()==0){
 				cappingPlayers.forEach(cappingPlayer -> cappingPlayer.sendTitle("", CommonColors.ERROR+"Failed to capture "+warpstoneName));
-				if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> losingPlayer.sendMessage(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured."));
+				Utils.notifyAll(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured.");
 				stopCapping();
 			}
 		}, 0, 20);
