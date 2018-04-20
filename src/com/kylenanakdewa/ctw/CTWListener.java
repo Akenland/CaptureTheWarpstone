@@ -55,7 +55,7 @@ public final class CTWListener implements Listener {
 		}
 
 		// Prevent warp command on CTW world
-		if(CTWPlugin.isTeleportationBlocked() && event.getCause().equals(WarpCause.COMMAND) && (CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld()))){
+		if(CTWPlugin.isTeleportationBlocked() && !event.getPlayer().hasPermission("warpstones.tp.nolimits") && event.getCause().equals(WarpCause.COMMAND) && (CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld()))){
 			Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"You must use Warpstones on this world!");
 			event.setCancelled(true);
 			return;
