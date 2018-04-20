@@ -3,6 +3,8 @@ package com.kylenanakdewa.ctw;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.rmi.CORBA.Util;
+
 import com.kylenanakdewa.core.characters.players.PlayerCharacter;
 import com.kylenanakdewa.core.common.CommonColors;
 import com.kylenanakdewa.core.common.Utils;
@@ -39,6 +41,8 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 	private double capTime;
 	/** The progress bar for capturing. */
 	private BossBar progressBar;
+	/** The progress bar for losing. */
+	private BossBar losingBar;
 
 	/** The task ID for the cap progression. */
 	private int taskID;
@@ -158,7 +162,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		String warpstoneName = warpstone.getDisplayName()!=null ? warpstone.getDisplayName() : "Warpstone";
 
 		// Notify original warpstone owner
-		if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> player.sendMessage(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is being captured!"));
+		Utils.notifyAll(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is being captured!");
 
 		// Notify capping player, and set up progress bar
 		player.sendTitle("", ChatColor.BLUE+"Capturing "+warpstoneName);
@@ -166,6 +170,9 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		progressBar = Bukkit.createBossBar("Capturing "+warpstoneName, BarColor.BLUE, BarStyle.SOLID);
 		progressBar.addPlayer(player);
 		progressBar.setVisible(true);
+
+		losingBar = Bukkit.createBossBar("Losing "+warpstoneName, BarColor.RED, BarStyle.SOLID);
+		losingBar.setVisible(true);
 
 		// Start timer
 		taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
@@ -176,16 +183,26 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 				setRealm(cappingRealm);
 				return;
 			}
+
 			progressBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
 			progressBar.setTitle("Capturing "+warpstoneName+": "+getCapTimeString()+" remaining");
 
+			losingBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
+			losingBar.setTitle("Losing "+warpstoneName+": "+getCapTimeString()+" remaining");
+			if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> losingBar.addPlayer(losingPlayer));
+
 			// Remove players if they go too far or disconnect
 			Set<Player> checkPlayers = new HashSet<Player>(cappingPlayers);
-			checkPlayers.removeIf(cappingPlayer -> !cappingPlayer.isOnline() || cappingPlayer.getLocation().distanceSquared(warpstone.getLocation()) > Math.pow(CTWPlugin.getMaxCapDistance(),2));
+			for(Player cappingPlayer : checkPlayers){
+				if(!cappingPlayer.isOnline() || cappingPlayer.getLocation().distanceSquared(warpstone.getLocation()) > Math.pow(CTWPlugin.getMaxCapDistance(),2)){
+					Utils.sendActionBar(cappingPlayer, CommonColors.ERROR+"You are too far away to capture "+warpstoneName);
+					checkPlayers.remove(cappingPlayer);
+				}
+			}
 			if(checkPlayers.size()==0){
-				stopCapping();
 				cappingPlayers.forEach(cappingPlayer -> cappingPlayer.sendTitle("", CommonColors.ERROR+"Failed to capture "+warpstoneName));
-				if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> player.sendMessage(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured."));
+				if(this.realm!=null) this.realm.getOnlinePlayers().forEach(losingPlayer -> losingPlayer.sendMessage(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured."));
+				stopCapping();
 			}
 		}, 0, 20);
 	}
@@ -199,6 +216,8 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		capTime = 0;
 		progressBar.setVisible(false);
 		progressBar.removeAll();
+		losingBar.setVisible(false);
+		losingBar.removeAll();
 		Bukkit.getScheduler().cancelTask(taskID);
 	}
 
