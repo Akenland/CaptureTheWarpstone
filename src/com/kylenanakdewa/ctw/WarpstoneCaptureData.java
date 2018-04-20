@@ -3,8 +3,6 @@ package com.kylenanakdewa.ctw;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.rmi.CORBA.Util;
-
 import com.kylenanakdewa.core.characters.players.PlayerCharacter;
 import com.kylenanakdewa.core.common.CommonColors;
 import com.kylenanakdewa.core.common.Utils;
@@ -112,15 +110,18 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 	 */
 	void onActivation(WarpstoneActivateEvent event){
 		PlayerCharacter character = PlayerCharacter.getCharacter(event.getPlayer());
+		Realm playerRealm = character.getRealm();
+		if(playerRealm!=null && playerRealm.getTopParentRealm()!=null) playerRealm = playerRealm.getTopParentRealm();
+
 		// If player is not in a realm, show error
-		if(character.getRealm()==null){
+		if(playerRealm==null){
 			Utils.sendActionBar(event.getPlayer(), "This warpstone can only be used by realm members");
 			event.setCancelled(true);
 			return;
 		}
 
 		// If character's realm owns the Warpstone, activate as normal
-		if(character.getRealm().equals(realm)) return;
+		if(playerRealm.equals(realm)) return;
 
 		event.setCancelled(true);
 
@@ -128,7 +129,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		if(cappingRealm!=null){
 
 			// If the warpstone is being capped by their own team, reduce required cap time
-			if(character.getRealm().equals(cappingRealm) && !cappingPlayers.contains(event.getPlayer())){
+			if(playerRealm.equals(cappingRealm) && !cappingPlayers.contains(event.getPlayer())){
 				if(cappingPlayers.size()<4) capTime=capTime*(1.00-CTWPlugin.getCapTimeReduction());
 				cappingPlayers.add(event.getPlayer());
 				progressBar.addPlayer(event.getPlayer());
@@ -143,7 +144,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		}
 
 		// Otherwise, start capping!
-		startCapping(character.getRealm(), event.getPlayer());
+		startCapping(playerRealm, event.getPlayer());
 	}
 
 
