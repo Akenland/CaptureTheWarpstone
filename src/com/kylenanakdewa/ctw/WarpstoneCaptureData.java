@@ -49,7 +49,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		super(warpstone, plugin);
 
 		// Determine if capturable based on global setting
-		if(CTWPlugin.getCTWWorld()==null || warpstone.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
+		if(!warpstone.equals(CTWPlugin.getCTWSpawn()) && !warpstone.equals(Warpstone.getSpawn()) && (CTWPlugin.getCTWWorld()==null || warpstone.getLocation().getWorld().equals(CTWPlugin.getCTWWorld()))){
 			isCapturable = true;
 			realm = CTWPlugin.getRealmProvider().getRealm(data.getString("realm"));
 		}
