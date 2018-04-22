@@ -5,6 +5,10 @@
 # If set, the plugin will only function in this world. If blank, the plugin will be active in all worlds.
 world: 
 
+# The spawn Warpstone for the CTW world.
+# If set, this will override the server spawn warpstone, in the CTW world.
+spawn-warpstone: 
+
 # Whether to block teleportation. This only affects worlds where CTW is active (if set above). Default true.
 block-teleportation: true
 
