@@ -3,13 +3,17 @@ package com.kylenanakdewa.ctw;
 import com.kylenanakdewa.core.characters.players.PlayerCharacter;
 import com.kylenanakdewa.core.common.CommonColors;
 import com.kylenanakdewa.core.common.Utils;
+import com.kylenanakdewa.warpstones.WarpPlayer;
+import com.kylenanakdewa.warpstones.Warpstone;
 import com.kylenanakdewa.warpstones.events.PlayerWarpEvent;
 import com.kylenanakdewa.warpstones.events.WarpstoneActivateEvent;
 import com.kylenanakdewa.warpstones.events.PlayerWarpEvent.WarpCause;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
@@ -54,6 +58,13 @@ public final class CTWListener implements Listener {
 			return;
 		}
 
+		// Override spawn warpstone
+		if(event.isSpawnWarpstone() && (CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld()))){
+			event.setCancelled(true);
+			new WarpPlayer(event.getPlayer()).warp(CTWPlugin.getCTWSpawn(), false, event.getCause());
+			return;
+		}
+
 		// Prevent warp command on CTW world
 		if(CTWPlugin.isTeleportationBlocked() && !event.getPlayer().hasPermission("warpstones.tp.nolimits") && event.getCause().equals(WarpCause.COMMAND) && (CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld()))){
 			Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"You must use Warpstones on this world!");
@@ -87,11 +98,49 @@ public final class CTWListener implements Listener {
 		if(!CTWPlugin.isTeleportationBlocked() || event.getPlayer().hasPermission("warpstones.tp.nolimits")) return;
 
 		if(CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
-			String command = event.getMessage().toLowerCase();
-			if(command.contains("tp ") || command.contains("tpa ") || command.contains("tphere ") || command.contains("tpahere ")){
+			String command = event.getMessage().toLowerCase().split(" ", 2)[0];
+			if(command.endsWith("tp") || command.endsWith("tpa") || command.endsWith("tphere") || command.endsWith("tpahere")
+			 || command.endsWith("warp") || command.endsWith("ws") || command.endsWith("warpstones")
+			 || command.endsWith("spawn") || command.endsWith("home") || command.endsWith("last")){
 				Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"You must use Warpstones on this world!");
 				event.setCancelled(true);
 			}
 		}
 	}
+
+	/**
+	 * Block bed usage on CTW world.
+	 */
+	@EventHandler
+	public void onBedEnter(PlayerBedEnterEvent event){
+		if(CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
+			Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"You must use Warpstones on this world!");
+			event.setCancelled(true);
+		}
+	}
+
+
+	/**
+	 * Respawn players at last Warpstone they capped, or the CTW spawn.
+	 */
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent event){
+		PlayerCharacter character = PlayerCharacter.getCharacter(event.getPlayer());
+		if(CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
+			Warpstone respawnLoc = CTWPlugin.getLastRealmCap(character.getRealm());
+			String message = CommonColors.INFO+"Respawning at the last Warpstone your realm captured";
+
+			// If that's null, use spawn instead
+			if(respawnLoc==null){
+				respawnLoc = CTWPlugin.getCTWSpawn();
+				message = CommonColors.INFO+"Respawning at CTW spawn";
+			}
+
+			if(respawnLoc!=null){
+				event.setRespawnLocation(respawnLoc.getLocation());
+				Utils.sendActionBar(event.getPlayer(), message);
+			}
+		}
+	}
+
 }

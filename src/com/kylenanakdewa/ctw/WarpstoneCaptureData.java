@@ -90,6 +90,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 
 		this.realm = realm;
 		data.set("realm", realm.getIdentifier());
+		CTWPlugin.setLastRealmCap(realm, warpstone);
 		stopCapping();
 
 		// Notify all players that warpstone was captured

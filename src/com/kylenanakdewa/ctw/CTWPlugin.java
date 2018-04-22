@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.kylenanakdewa.core.CorePlugin;
+import com.kylenanakdewa.core.realms.Realm;
 import com.kylenanakdewa.core.realms.RealmProvider;
 import com.kylenanakdewa.warpstones.Warpstone;
 
@@ -23,6 +24,9 @@ public final class CTWPlugin extends JavaPlugin {
 
 	/** The WarpstoneCaptureData. */
 	private static Map<Warpstone,WarpstoneCaptureData> warpstoneData = new HashMap<Warpstone,WarpstoneCaptureData>();
+
+	/** The last Warpstone each Realm capped. */
+	private static Map<Realm,Warpstone> lastRealmCapped = new HashMap<Realm,Warpstone>();
 
 
 	@Override
@@ -80,6 +84,14 @@ public final class CTWPlugin extends JavaPlugin {
 		return plugin.getConfig().getDouble("max-cap-distance");
 	}
 
+	/**
+	 * Gets the spawn Warpstone for the CTW world, if set.
+	 * @return the spawn Warpstone for the CTW world, or null if not set
+	 */
+	static Warpstone getCTWSpawn(){
+		return Warpstone.get(plugin.getConfig().getString("spawn-warpstone"));
+	}
+
 
 	/**
 	 * Gets the capture data for a Warpstone.
@@ -95,4 +107,23 @@ public final class CTWPlugin extends JavaPlugin {
 		return data;
 	}
 
+
+	/**
+	 * Sets the last capped Warpstone for a Realm. 
+	 * Realm members will respawn at the last capped Warpstone, unless another Realm has capped it.
+	 * @param realm the realm who capped
+	 * @param warpstone the warpstone they capped
+	 */
+	public static void setLastRealmCap(Realm realm, Warpstone warpstone){
+		lastRealmCapped.put(realm, warpstone);
+	}
+	/**
+	 * Gets the last Warpstone capped by a Realm.
+	 * Realm members will respawn at the last capped Warpstone, unless another Realm has capped it.
+	 * @param realm the realm
+	 * @return the last Warpstone they capped, or null if they haven't capped
+	 */
+	public static Warpstone getLastRealmCap(Realm realm){
+		return lastRealmCapped.get(realm);
+	}
 }
