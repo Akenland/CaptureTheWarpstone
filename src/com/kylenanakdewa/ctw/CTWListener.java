@@ -59,7 +59,7 @@ public final class CTWListener implements Listener {
 		// Prevent warping to lost warpstones
 		WarpstoneCaptureData data = CTWPlugin.getWarpstoneCaptureData(event.getWarpstone());
 		PlayerCharacter character = PlayerCharacter.getCharacter(event.getPlayer());
-		if(data.isCapturable() && !event.isSpawnWarpstone() && !event.getCause().equals(WarpCause.SHARD) && (character.getRealm()==null || data.getRealm()==null || !data.getRealm().equals(character.getRealm()))){
+		if(data.isCapturable() && !event.isSpawnWarpstone() && !event.getCause().equals(WarpCause.SHARD) && (character.getRealm()==null || character.getRealm().getTopParentRealm()==null || data.getRealm()==null || !data.getRealm().equals(character.getRealm().getTopParentRealm()))){
 			Utils.sendActionBar(event.getPlayer(), CommonColors.ERROR+"Your realm has lost this Warpstone!");
 			event.setCancelled(true);
 			return;
@@ -127,8 +127,14 @@ public final class CTWListener implements Listener {
 	public void onRespawn(PlayerRespawnEvent event){
 		PlayerCharacter character = PlayerCharacter.getCharacter(event.getPlayer());
 		if(CTWPlugin.getCTWWorld()==null || event.getPlayer().getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
-			Warpstone respawnLoc = CTWPlugin.getLastRealmCap(character.getRealm());
-			String message = CommonColors.INFO+"Respawning at the last Warpstone your realm captured";
+			Warpstone respawnLoc = null;
+			String message = null;
+
+			// Attempt to get realm last capped
+			if(character.getRealm()!=null && character.getRealm().getTopParentRealm()!=null){
+				respawnLoc = CTWPlugin.getLastRealmCap(character.getRealm().getTopParentRealm());
+				message = CommonColors.INFO+"Respawning at the last Warpstone your realm captured";
+			}
 
 			// If that's null, use spawn instead
 			if(respawnLoc==null){
