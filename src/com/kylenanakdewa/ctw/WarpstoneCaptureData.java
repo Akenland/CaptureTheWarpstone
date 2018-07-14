@@ -230,7 +230,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 					markedRemoval.add(cappingPlayer);
 
 					// Increase cap time
-					capTime += ((CTWPlugin.getBaseCapTime()*20) - capTime) * 0.25;
+					capTime += (CTWPlugin.getBaseCapTime()*20) * 0.20;
 				}
 			}
 			checkPlayers.removeAll(markedRemoval);
@@ -239,6 +239,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 				Utils.notifyAll(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured.");
 				stopCapping();
 			}
+			cappingPlayers.removeAll(markedRemoval);
 		}, 0, 20);
 	}
 
