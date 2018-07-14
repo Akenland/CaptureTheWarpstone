@@ -11,9 +11,13 @@ import com.kylenanakdewa.core.realms.RealmMember;
 import com.kylenanakdewa.warpstones.Warpstone;
 import com.kylenanakdewa.warpstones.WarpstoneSaveDataSection;
 import com.kylenanakdewa.warpstones.events.WarpstoneActivateEvent;
+import com.kylenanakdewa.warpstones.items.ItemListener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -87,6 +91,9 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 			this.realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.RED+"Warpstone Lost!", warpstoneNameOrBlank));
 			this.realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> childPlayer.sendTitle(ChatColor.RED+"Warpstone Lost!", warpstoneNameOrBlank)));
 		}
+
+		// Give warp dust to capping players
+		cappingPlayers.forEach(player -> player.getInventory().addItem(ItemListener.getRandomWarpDust()));
 
 		this.realm = realm;
 		data.set("realm", realm.getIdentifier());
@@ -173,11 +180,8 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		player.sendTitle("", ChatColor.BLUE+"Capturing "+warpstoneName);
 
 		progressBar = Bukkit.createBossBar("Capturing "+warpstoneName, BarColor.BLUE, BarStyle.SOLID);
-		progressBar.setVisible(true);
-
 		losingBar = Bukkit.createBossBar("Losing "+warpstoneName, BarColor.RED, BarStyle.SOLID);
-		losingBar.setVisible(true);
-
+		
 		// Start timer
 		taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPlugin(), () -> {
 			// Update timer
@@ -187,27 +191,49 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 				setRealm(cappingRealm);
 				return;
 			}
-
+			
 			progressBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
 			progressBar.setTitle("Capturing "+warpstoneName+": "+getCapTimeString()+" remaining");
 			realm.getOnlinePlayers().forEach(cappingPlayer -> progressBar.addPlayer(cappingPlayer));
 			realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> progressBar.addPlayer(childPlayer)));
-
+			progressBar.setVisible(true);
+			
 			losingBar.setProgress(capTime/(CTWPlugin.getBaseCapTime()*20));
 			losingBar.setTitle("Losing "+warpstoneName+": "+getCapTimeString()+" remaining");
 			if(this.realm!=null){
 				this.realm.getOnlinePlayers().forEach(losingPlayer -> losingBar.addPlayer(losingPlayer));
 				this.realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> losingBar.addPlayer(childPlayer)));
+				losingBar.setVisible(true);
+			} else {
+				losingBar.removeAll();
+				losingBar.setVisible(false);
 			}
+
+			// Sound effect
+			warpstone.getLocation().getWorld().playSound(warpstone.getLocation(), Sound.BLOCK_NOTE_BASEDRUM, SoundCategory.AMBIENT, 1, 0.5f);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> warpstone.getLocation().getWorld().playSound(warpstone.getLocation(), Sound.BLOCK_NOTE_BASEDRUM, SoundCategory.AMBIENT, 1, 0.6f), 6);
+			if(capTime<300){
+				Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
+					warpstone.getLocation().getWorld().playSound(warpstone.getLocation(), Sound.BLOCK_NOTE_BASEDRUM, SoundCategory.AMBIENT, 1, 0.5f);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> warpstone.getLocation().getWorld().playSound(warpstone.getLocation(), Sound.BLOCK_NOTE_BASEDRUM, SoundCategory.AMBIENT, 1, 0.6f), 6);
+				}, 10);
+			}
+			// Particle effect
+			warpstone.getLocation().getWorld().spawnParticle(Particle.PORTAL, warpstone.getLocation().getX(), warpstone.getLocation().getY()+1, warpstone.getLocation().getZ(), 1200, 8, 8, 8, 2);
 
 			// Remove players if they go too far or disconnect
 			Set<Player> checkPlayers = new HashSet<Player>(cappingPlayers);
+			Set<Player> markedRemoval = new HashSet<Player>();
 			for(Player cappingPlayer : checkPlayers){
-				if(!cappingPlayer.isOnline() || cappingPlayer.getLocation().distanceSquared(warpstone.getLocation()) > Math.pow(CTWPlugin.getMaxCapDistance(),2)){
+				if(!cappingPlayer.isOnline() || cappingPlayer.isDead() || (CTWPlugin.getCTWWorld()!=null && !cappingPlayer.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())) || cappingPlayer.getLocation().distanceSquared(warpstone.getLocation()) > Math.pow(CTWPlugin.getMaxCapDistance(),2)){
 					Utils.sendActionBar(cappingPlayer, CommonColors.ERROR+"You are too far away to capture "+warpstoneName);
-					checkPlayers.remove(cappingPlayer);
+					markedRemoval.add(cappingPlayer);
+
+					// Increase cap time
+					capTime += ((CTWPlugin.getBaseCapTime()*20) - capTime) * 0.25;
 				}
 			}
+			checkPlayers.removeAll(markedRemoval);
 			if(checkPlayers.size()==0){
 				cappingPlayers.forEach(cappingPlayer -> cappingPlayer.sendTitle("", CommonColors.ERROR+"Failed to capture "+warpstoneName));
 				Utils.notifyAll(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneName+CommonColors.MESSAGE+" is no longer being captured.");

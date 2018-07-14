@@ -133,7 +133,16 @@ public final class CTWListener implements Listener {
 			// Attempt to get realm last capped
 			if(character.getRealm()!=null && character.getRealm().getTopParentRealm()!=null){
 				respawnLoc = CTWPlugin.getLastRealmCap(character.getRealm().getTopParentRealm());
-				message = CommonColors.INFO+"Respawning at the last Warpstone your realm captured";
+
+				// Make sure warpstone wasn't lost
+				if(respawnLoc!=null){
+					WarpstoneCaptureData data = CTWPlugin.getWarpstoneCaptureData(respawnLoc);
+					if(data.getRealm()==null || !data.getRealm().equals(character.getRealm().getTopParentRealm())){
+						respawnLoc = CTWPlugin.getCTWSpawn();
+						message = CommonColors.ERROR+"Your realm has lost the last Warpstone captured! Respawning at CTW spawn";
+					}
+					else message = CommonColors.INFO+"Respawning at the last Warpstone your realm captured";
+				}
 			}
 
 			// If that's null, use spawn instead
