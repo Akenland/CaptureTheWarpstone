@@ -103,6 +103,10 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		// Notify all players that warpstone was captured
 		Utils.notifyAll(CommonColors.INFO+"[CTW] "+ChatColor.WHITE+warpstoneNameOrWarpstone+CommonColors.MESSAGE+" was captured!");
 
+		// Sound effect
+		warpstone.getLocation().getWorld().playSound(warpstone.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.AMBIENT, 1, 0);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> warpstone.getLocation().getWorld().playSound(warpstone.getLocation(), Sound.BLOCK_NOTE_BELL, 1, 0.8f), 12);
+
 		// Notify winning realm
 		realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank));
 		realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> childPlayer.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank)));
