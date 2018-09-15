@@ -100,7 +100,7 @@ public class GuardianTree {
         Realm realm = null;
         for(Warpstone warpstone : warpstones){
             WarpstoneCaptureData data = CTWPlugin.getWarpstoneCaptureData(warpstone);
-            if(realm!=null && !data.getRealm().equals(realm)) return null;
+            if(realm!=null && data!=null && data.getRealm()!=null && !data.getRealm().equals(realm)) return null;
             else realm = data.getRealm();
         }
         return realm;
