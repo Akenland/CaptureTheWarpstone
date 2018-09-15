@@ -6,7 +6,6 @@ import java.util.Map;
 import com.kylenanakdewa.core.CorePlugin;
 import com.kylenanakdewa.core.realms.Realm;
 import com.kylenanakdewa.core.realms.RealmProvider;
-import com.kylenanakdewa.ctw.guardiantrees.GuardianTree;
 import com.kylenanakdewa.warpstones.Warpstone;
 
 import org.bukkit.Bukkit;
@@ -31,10 +30,11 @@ public final class CTWPlugin extends JavaPlugin {
 
 
 	@Override
-	public void onEnable() {
+	public void onEnable(){
 		plugin = this;
 		saveDefaultConfig();
 		getServer().getPluginManager().registerEvents(new CTWListener(), this);
+		getCommand("ctw").setExecutor(new CTWCommands());
 
 		if(plugin.getConfig().getBoolean("enable-guardian-trees")) GuardianTree.enableGuardianTrees(this);
 	}

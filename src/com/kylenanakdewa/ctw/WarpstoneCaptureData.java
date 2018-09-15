@@ -6,6 +6,7 @@ import java.util.Set;
 import com.kylenanakdewa.core.characters.players.PlayerCharacter;
 import com.kylenanakdewa.core.common.CommonColors;
 import com.kylenanakdewa.core.common.Utils;
+import com.kylenanakdewa.core.common.prompts.Prompt;
 import com.kylenanakdewa.core.realms.Realm;
 import com.kylenanakdewa.core.realms.RealmMember;
 import com.kylenanakdewa.warpstones.Warpstone;
@@ -250,7 +251,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 	/**
 	 * Stops capping.
 	 */
-	private void stopCapping(){
+	void stopCapping(){
 		cappingRealm = null;
 		cappingPlayers.clear();
 		capTime = 0;
@@ -275,5 +276,29 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		if(secString.length()==1) secString = "0"+secString;
 		return minutes+":"+secString;
 	}
+
+    /**
+     * Gets an info prompt about this Warpstone's capture data.
+     * @return a Prompt with information about this Warpstone's capture data
+     */
+    public Prompt getInfo(){
+        Prompt prompt = new Prompt();
+        prompt.addQuestion("&8--- &9CTW Warpstone: "+warpstone.getDisplayName()+" ("+warpstone.getIdentifier()+") &8---");
+        prompt.addQuestion("- Location: "+warpstone.getLocation().getBlockX()+" "+warpstone.getLocation().getBlockY()+" "+warpstone.getLocation().getBlockZ()+" in "+warpstone.getLocation().getWorld().getName());
+		if(!isCapturable()) prompt.addQuestion("- This Warpstone is not capturable.");
+		if(getRealm()!=null) prompt.addQuestion("- Owned by "+getRealm().getColor()+getRealm().getIdentifier());
+		prompt.addAnswer("Warp", "command_warp to "+warpstone.getIdentifier());
+		if(isCapturable()) prompt.addAnswer("Disable capturing", "command_ctw disable "+warpstone.getIdentifier());
+		else prompt.addAnswer("Enable capturing", "command_ctw enable "+warpstone.getIdentifier());
+		prompt.addAnswer("Reset realm", "command_ctw reset "+warpstone.getIdentifier());
+		if(cappingRealm!=null){
+			prompt.addQuestion("- Under capture by "+cappingRealm.getColor()+cappingRealm.getIdentifier()+" - "+getCapTimeString()+" remaining - Task ID "+taskID);
+			String playerList = "- Capping players: ";
+			for(Player player : cappingPlayers) playerList+=player.getName();
+			prompt.addQuestion(playerList);
+			prompt.addAnswer("Cancel capture", "command_ctw stopcap "+warpstone.getIdentifier());
+		}
+        return prompt;
+    }
 
 }

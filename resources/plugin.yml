@@ -6,3 +6,7 @@ website: http://plugins.akenland.com
 
 main: com.kylenanakdewa.ctw.CTWPlugin
 depend: [CoRE, Warpstones]
+
+commands:
+  ctw:
+    description: CTW commands
