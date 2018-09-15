@@ -46,6 +46,9 @@ public class GuardianTree {
      * Grants powers for Guardian Trees as needed.
      */
     private static void grantAllPowers(){
+        // Performance boost: skip if the world is empty
+        if(CTWPlugin.getCTWWorld()!=null && CTWPlugin.getCTWWorld().getPlayers().isEmpty()) return;
+
         trees.forEach(tree -> tree.grantPowers());
     }
 
@@ -81,7 +84,7 @@ public class GuardianTree {
         Realm realm = getControllingRealm();
         if(realm!=null){
             for(Player player : realm.getOnlinePlayers()){
-                if(player.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
+                if(CTWPlugin.getCTWWorld()==null || player.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
                     player.addPotionEffect(effect, true);
                 }
             }
