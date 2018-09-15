@@ -37,7 +37,7 @@ class CTWCommands implements TabExecutor {
 
                 for(Warpstone warpstone : WarpstonesPlugin.getWarpstones().values()){
                     WarpstoneCaptureData data = CTWPlugin.getWarpstoneCaptureData(warpstone);
-                    if(data.getRealm().equals(realm)){
+                    if(data!=null && data.getRealm()!=null && data.getRealm().equals(realm)){
                         prompt.addAnswer(warpstone.getDisplayName()+" ("+warpstone.getIdentifier()+")", "command_ctw info "+warpstone.getIdentifier());
                     }
                 }
