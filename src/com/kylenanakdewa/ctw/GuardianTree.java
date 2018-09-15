@@ -33,7 +33,9 @@ public class GuardianTree {
         trees = new HashSet<GuardianTree>();
         ConfigurationSection file = new ConfigAccessor("trees.yml", plugin).getConfig();
         for(String treeName : file.getKeys(false)){
-            PotionEffect effect = new PotionEffect(PotionEffectType.getByName(file.getString(treeName+".effect.type")), 100, file.getInt(treeName+".effect.level"));
+            PotionEffectType effectType = PotionEffectType.getByName(file.getString(treeName+".effect.type").toUpperCase());
+            if(effectType==null) Bukkit.broadcast("[CTW Guardian Trees] Invalid effect for tree "+treeName+" - "+file.getString(treeName+".effect.type"), "core.admin");
+            PotionEffect effect = new PotionEffect(effectType, 100, file.getInt(treeName+".effect.level"));
             Set<Warpstone> warpstones = new HashSet<Warpstone>();
             file.getStringList(treeName+".warpstones").forEach(wsName -> warpstones.add(Warpstone.get(wsName)));
             trees.add(new GuardianTree(file.getString(treeName), effect, warpstones));
