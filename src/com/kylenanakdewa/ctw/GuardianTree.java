@@ -42,7 +42,10 @@ public class GuardianTree {
             Set<Warpstone> warpstones = new HashSet<Warpstone>();
             file.getStringList(treeName+".warpstones").forEach(wsName -> warpstones.add(Warpstone.get(wsName)));
             trees.add(new GuardianTree(file.getString(treeName), effect, warpstones));
+            Bukkit.getLogger().info("[CTW Guardian Trees] Added tree "+treeName+" - "+warpstones.size()+" stones - "+effectType.getName()+" effect");
         }
+
+        Bukkit.getLogger().info("[CTW Guardian Trees] Found "+trees.size()+" trees");
 
         // Schedule task
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, ()->grantAllPowers(), 20, 60);

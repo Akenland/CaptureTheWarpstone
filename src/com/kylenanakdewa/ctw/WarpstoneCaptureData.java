@@ -97,8 +97,10 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		cappingPlayers.forEach(player -> player.getInventory().addItem(ItemListener.getRandomWarpDust()));
 
 		this.realm = realm;
-		data.set("realm", realm.getIdentifier());
-		CTWPlugin.setLastRealmCap(realm, warpstone);
+		if(realm!=null){
+			data.set("realm", realm.getIdentifier());
+			CTWPlugin.setLastRealmCap(realm, warpstone);
+		} else data.set("realm", null);
 		stopCapping();
 
 		// Notify all players that warpstone was captured

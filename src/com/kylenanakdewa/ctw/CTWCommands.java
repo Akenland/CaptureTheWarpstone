@@ -50,7 +50,10 @@ class CTWCommands implements TabExecutor {
             if(args[0].equalsIgnoreCase("tree") && GuardianTree.getTrees()!=null){
                 GuardianTree tree = GuardianTree.getTree(args[1]);
 
-                if(tree==null) return false;
+                if(tree==null){
+                    sender.sendMessage("Tree not found.");
+                    return false;
+                }
 
                 tree.getInfo().display(sender);
                 return true;
