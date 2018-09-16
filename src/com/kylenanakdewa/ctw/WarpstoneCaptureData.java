@@ -94,7 +94,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		}
 
 		// Give warp dust to capping players
-		cappingPlayers.forEach(player -> player.getInventory().addItem(ItemListener.getRandomWarpDust()));
+		if(cappingPlayers!=null) cappingPlayers.forEach(player -> player.getInventory().addItem(ItemListener.getRandomWarpDust()));
 
 		this.realm = realm;
 		if(realm!=null){
