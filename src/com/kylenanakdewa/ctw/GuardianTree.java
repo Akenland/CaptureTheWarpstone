@@ -41,7 +41,7 @@ public class GuardianTree {
             PotionEffect effect = new PotionEffect(effectType, 100, file.getInt(treeName+".effect.level"));
             Set<Warpstone> warpstones = new HashSet<Warpstone>();
             file.getStringList(treeName+".warpstones").forEach(wsName -> warpstones.add(Warpstone.get(wsName)));
-            trees.add(new GuardianTree(file.getString(treeName), effect, warpstones));
+            trees.add(new GuardianTree(treeName, effect, warpstones));
             Bukkit.getLogger().info("[CTW Guardian Trees] Added tree "+treeName+" - "+warpstones.size()+" stones - "+effectType.getName()+" effect");
         }
 
@@ -66,7 +66,6 @@ public class GuardianTree {
      * @return the set of trees on this server
      */
     public static Set<GuardianTree> getTrees(){
-        Bukkit.getLogger().info("[CTW Guardian Trees] Found "+trees.size()+" trees");
         return trees;
     }
 
@@ -76,12 +75,7 @@ public class GuardianTree {
      * @return the tree, or null if it does not exist
      */
     public static GuardianTree getTree(String treeName){
-        Bukkit.getLogger().info("[CTW Guardian Trees] Found "+trees.size()+" trees");
-        for(GuardianTree tree : trees){
-            Bukkit.getLogger().info("[CTW Guardian Trees] Checking tree "+tree.getName());
-            if(tree.getName().equalsIgnoreCase(treeName)) return tree;
-        }
-        Bukkit.getLogger().info("[CTW Guardian Trees] Found no matching tree for "+treeName);
+        for(GuardianTree tree : trees) if(tree.getName().equalsIgnoreCase(treeName)) return tree;
         return null;
     }
 
@@ -119,7 +113,6 @@ public class GuardianTree {
     private void grantPowers(){
         Realm realm = getControllingRealm();
         if(realm!=null){
-            Bukkit.getLogger().info("[CTW Guardian Trees] Realm "+realm.getIdentifier()+" owns tree "+name);
             for(Player player : realm.getOnlinePlayers()){
                 if(CTWPlugin.getCTWWorld()==null || player.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
                     player.addPotionEffect(effect, true);
