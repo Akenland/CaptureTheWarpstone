@@ -174,6 +174,12 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 	 * @param player the player who is capping
 	 */
 	private void startCapping(Realm realm, Player player){
+		// Check that capping realm is not already the owner
+		if(realm==null || realm.equals(this.realm)){
+			stopCapping();
+			return;
+		}
+
 		// Start cap
 		cappingRealm = realm;
 		cappingPlayers = new HashSet<Player>();
