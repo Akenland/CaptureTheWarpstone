@@ -111,8 +111,10 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> warpstone.getLocation().getWorld().playSound(warpstone.getLocation(), Sound.BLOCK_NOTE_BELL, 1, 0.8f), 12);
 
 		// Notify winning realm
-		realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank));
-		realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> childPlayer.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank)));
+		if(realm!=null){
+			realm.getOnlinePlayers().forEach(player -> player.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank));
+			realm.getChildRealms().forEach(childRealm -> childRealm.getOnlinePlayers().forEach(childPlayer -> childPlayer.sendTitle(ChatColor.GREEN+"Warpstone Captured!", warpstoneNameOrBlank)));
+		}
 
 		save();
 	}
