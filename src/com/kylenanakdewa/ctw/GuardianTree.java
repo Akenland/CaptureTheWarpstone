@@ -66,6 +66,7 @@ public class GuardianTree {
      * @return the set of trees on this server
      */
     public static Set<GuardianTree> getTrees(){
+        Bukkit.getLogger().info("[CTW Guardian Trees] Found "+trees.size()+" trees");
         return trees;
     }
 
@@ -75,9 +76,12 @@ public class GuardianTree {
      * @return the tree, or null if it does not exist
      */
     public static GuardianTree getTree(String treeName){
+        Bukkit.getLogger().info("[CTW Guardian Trees] Found "+trees.size()+" trees");
         for(GuardianTree tree : trees){
-            if(tree.name.equalsIgnoreCase(treeName)) return tree;
+            Bukkit.getLogger().info("[CTW Guardian Trees] Checking tree "+tree.getName());
+            if(tree.getName().equalsIgnoreCase(treeName)) return tree;
         }
+        Bukkit.getLogger().info("[CTW Guardian Trees] Found no matching tree for "+treeName);
         return null;
     }
 
@@ -115,9 +119,11 @@ public class GuardianTree {
     private void grantPowers(){
         Realm realm = getControllingRealm();
         if(realm!=null){
+            Bukkit.getLogger().info("[CTW Guardian Trees] Realm "+realm.getIdentifier()+" owns tree "+name);
             for(Player player : realm.getOnlinePlayers()){
                 if(CTWPlugin.getCTWWorld()==null || player.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
                     player.addPotionEffect(effect, true);
+                    Bukkit.getLogger().info("[CTW Guardian Trees] Tree "+name+" is granting effect "+effect.getType().getName()+" to "+player.getName());
                 }
             }
         }
