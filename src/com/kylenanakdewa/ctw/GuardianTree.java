@@ -123,7 +123,13 @@ public class GuardianTree {
             for(Player player : realm.getOnlinePlayers()){
                 if(CTWPlugin.getCTWWorld()==null || player.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
                     player.addPotionEffect(effect, true);
-                    Bukkit.getLogger().info("[CTW Guardian Trees] Tree "+name+" is granting effect "+effect.getType().getName()+" to "+player.getName());
+                }
+            }
+            for(Realm childRealm : realm.getChildRealms()){
+                for(Player player : childRealm.getOnlinePlayers()){
+                    if(CTWPlugin.getCTWWorld()==null || player.getLocation().getWorld().equals(CTWPlugin.getCTWWorld())){
+                        player.addPotionEffect(effect, true);
+                    }
                 }
             }
         }
