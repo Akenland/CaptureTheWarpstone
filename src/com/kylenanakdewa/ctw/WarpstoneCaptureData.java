@@ -57,7 +57,6 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		if(warpstone!=null && !warpstone.equals(CTWPlugin.getCTWSpawn()) && !warpstone.equals(Warpstone.getSpawn()) && (CTWPlugin.getCTWWorld()==null || warpstone.getLocation().getWorld().equals(CTWPlugin.getCTWWorld()))){
 			isCapturable = true;
 			realm = CTWPlugin.getRealmProvider().getRealm(data.getString("realm"));
-			Bukkit.getLogger().info("[CTW] Warpstone "+warpstone.getIdentifier()+" is owned by "+data.getString("realm"));
 		}
 	}
 
@@ -142,7 +141,7 @@ public class WarpstoneCaptureData extends WarpstoneSaveDataSection implements Re
 		}
 
 		// If character's realm owns the Warpstone, activate as normal
-		if(playerRealm.equals(realm)) return;
+		if(realm!=null && playerRealm.getIdentifier().equals(realm.getIdentifier())) return;
 
 		event.setCancelled(true);
 
