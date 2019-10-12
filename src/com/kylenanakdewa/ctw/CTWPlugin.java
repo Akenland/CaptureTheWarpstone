@@ -36,7 +36,7 @@ public final class CTWPlugin extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new CTWListener(), this);
 		getCommand("ctw").setExecutor(new CTWCommands());
 
-		if(plugin.getConfig().getBoolean("enable-guardian-trees")) GuardianTree.enableGuardianTrees(this);
+		if(getConfig().getBoolean("enable-guardian-trees")) GuardianTree.enableGuardianTrees(this);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public final class CTWPlugin extends JavaPlugin {
 
 
 	/**
-	 * Sets the last capped Warpstone for a Realm. 
+	 * Sets the last capped Warpstone for a Realm.
 	 * Realm members will respawn at the last capped Warpstone, unless another Realm has capped it.
 	 * @param realm the realm who capped
 	 * @param warpstone the warpstone they capped
